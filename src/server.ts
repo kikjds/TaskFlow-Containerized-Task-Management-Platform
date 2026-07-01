@@ -1,9 +1,11 @@
-import express, {Request, Response} from "express"
+import express from "express"
+import taskROuter from "./route/task.route.js"
 
 const app = express()
+app.use(express.urlencoded({extended: false, limit: '1mb', parameterLimit: 5000}))
+app.set('view engine', 'ejs')
 
-app.get('/', (req: Request, res: Response) => {
-    res.send("Hello world")
-})
+//View routes
+app.use(taskROuter)
 
 export default app
