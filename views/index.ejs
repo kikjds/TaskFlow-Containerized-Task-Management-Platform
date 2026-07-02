@@ -1,11 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home page</title>
 </head>
+
 <body>
-    <%=Greetings%>
+    <header>
+        <a href="/create">Create task</a>
+    </header>
+    <% if(Tasks.length> 0) {
+        Tasks.forEach((element) => {
+        %>
+        <h1>
+            <%=element.title%>
+        </h1>
+        <p>
+            <%=element.description%>
+        </p>
+        <% }) } else { %>
+            <h1>There is no tasks</h1>
+    <%}%>
 </body>
+
 </html>
