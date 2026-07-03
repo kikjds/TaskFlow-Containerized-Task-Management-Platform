@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createTask, createTaskView, taskView, editTaskView, editTask } from "../controller/task.controller.js";
+import { createTask, createTaskView, taskView, editTaskView, editTask, deleteTask } from "../controller/task.controller.js";
 const router = Router()
 
 // Home page
@@ -16,6 +16,9 @@ router.post('/create', createTask)
 
 //Handle task edit
 router.post('/edit/:id', editTask)
+
+//Handle task delete
+router.get('/delete/:id', deleteTask)
 
 
 

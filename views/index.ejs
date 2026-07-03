@@ -5,24 +5,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home page</title>
+    <link rel="stylesheet" href="/styles/main.css">
 </head>
 
 <body>
     <header>
         <a href="/create">Create task</a>
     </header>
-    <% if(Tasks.length> 0) {
-        Tasks.forEach((element) => {
-        %>
-        <h1>
-            <%=element.title%>
-        </h1>
-        <p>
-            <%=element.description%>
-        </p>
-        <% }) } else { %>
-            <h1>There is no tasks</h1>
-    <%}%>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <% if (Tasks.length> 0) { %>
+                <% Tasks.forEach((element)=> { %>
+                    <tr>
+                        <td>
+                            <%= element.title %>
+                        </td>
+                        <td>
+                            <%= element.description %>
+                        </td>
+                        <td key="<%= element.id%>"><a href="/edit/<%= element.id %>">Edit</a> <a href="/delete/<%=element.id%>">Usun</a></td>
+                    </tr>
+                    <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="3">There is no task</td>
+                            </tr>
+                    <% } %>
+        </tbody>
+    </table>
 </body>
 
 </html>

@@ -47,3 +47,15 @@ export async function editTask(req:Request, res:Response) {
         console.log(error)
     }
 }
+
+export async function deleteTask(req: Request, res: Response) {
+    try {
+        const id = req.params.id
+        if(!id) res.redirect('/')
+        const taskId = Array.isArray(id) ? id[0] : id
+        await taskService.deleteTaskById(taskId)
+        res.redirect('/')
+    } catch (error) {
+        console.log(error)
+    }
+}
