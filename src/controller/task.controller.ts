@@ -26,3 +26,24 @@ export async function createTaskView(req: Request, res: Response) {
         console.log(error)
     }
 }
+
+export async function editTaskView(req:Request, res: Response) {
+    try {
+        const id = req.params.id
+        if(!id) res.redirect('/')
+        const taskId = Array.isArray(id) ? id[0] : id
+        const task = await taskService.getTaskById(taskId)    
+        res.render('Task/edit', {task: task})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export async function editTask(req:Request, res:Response) {
+    try {
+        await taskService.editTaskById(req, res)
+        res.redirect('/')
+    } catch (error) {
+        console.log(error)
+    }
+}
