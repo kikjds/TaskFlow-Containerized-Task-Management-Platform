@@ -3,7 +3,7 @@ import * as taskService from "../service/task.service.js";
 
 export async function taskView(req: Request, res: Response) {
     try {
-        const tasks = await taskService.getAllTask()
+        const tasks = await taskService.getAllTask(req, res)
         res.render('index', {Tasks: tasks})
     } catch (error) {
         console.log(error)

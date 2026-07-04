@@ -1,28 +1,63 @@
 import { Task } from "../model/task.model.js";
+import { User } from "../model/user.model.js";
 import { Request, Response } from "express";
-import mongoose, { mongo } from "mongoose";
 
-export function getAllTask() {
- return Task.find()     
+export async function getAllTask(req: Request, res: Response) {
+    try {
+        const userId = req.session.userId;
+
+        const user = await User.findById(userId).populate("tasks");
+
+        return user?.tasks;
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 export async function createTask(req: Request, res: Response) {
-    const { title, description } = req.body
-    await Task.create({
-        title: title,
-        description: description
-    })
+    try {
+        const userId = req.session.userId;
+        const { title, description } = req.body;
+
+        const task = await Task.create({
+            title,
+            description
+        });
+
+        await User.findByIdAndUpdate(userId, {
+            $push: { tasks: task._id }
+        });
+
+        return
+    } catch (error) {
+        console.error(error);
+    }
 }
 
-export function getTaskById(id: string) {
-    return Task.findById(id)
+export async function getTaskById(id: string) {
+    return Task.findById(id);
 }
 
 export async function editTaskById(req: Request, res: Response) {
-    const { title, description, id } = req.body
-    await Task.findByIdAndUpdate({_id: new mongoose.Types.ObjectId(id)}, {title, description})
+    try {
+        const { title, description, id } = req.body;
+
+        const updated = await Task.findByIdAndUpdate(
+            id,
+            { title, description },
+            { new: true }
+        );
+
+        return res.status(200).json(updated);
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 export async function deleteTaskById(id: string) {
-    await Task.findByIdAndDelete({_id: new mongoose.Types.ObjectId(id)})
+    try {
+        await Task.findByIdAndDelete(id);
+    } catch (error) {
+        console.error(error);
+    }
 }

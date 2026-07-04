@@ -7,10 +7,10 @@
     <title>Home page</title>
     <link rel="stylesheet" href="/styles/main.css">
 </head>
-
 <body>
     <header>
         <a href="/create">Create task</a>
+        <a href="/logout">Logout</a>
     </header>
     <table border="1">
         <thead>
@@ -22,7 +22,7 @@
         </thead>
 
         <tbody>
-            <% if (Tasks.length> 0) { %>
+            <% if (Tasks) { %>
                 <% Tasks.forEach((element)=> { %>
                     <tr>
                         <td>

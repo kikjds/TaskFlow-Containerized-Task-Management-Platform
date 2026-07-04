@@ -1,24 +1,25 @@
 import { Router } from "express";
 import { createTask, createTaskView, taskView, editTaskView, editTask, deleteTask } from "../controller/task.controller.js";
+import authMiddleware from "../middleware/auth.middleware.js";
 const router = Router()
 
 // Home page
-router.get('/', taskView)
+router.get('/', authMiddleware, taskView)
 
 // Create task page
-router.get('/create', createTaskView)
+router.get('/create', authMiddleware, createTaskView)
 
 // Edit task page
-router.get('/edit/:id', editTaskView)
+router.get('/edit/:id', authMiddleware, editTaskView)
 
 //Handle task create
-router.post('/create', createTask)
+router.post('/create', authMiddleware, createTask)
 
 //Handle task edit
-router.post('/edit/:id', editTask)
+router.post('/edit/:id', authMiddleware, editTask)
 
 //Handle task delete
-router.get('/delete/:id', deleteTask)
+router.get('/delete/:id', authMiddleware, deleteTask)
 
 
 
