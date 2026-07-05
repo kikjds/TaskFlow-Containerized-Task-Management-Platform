@@ -48,7 +48,7 @@ export async function editTaskById(req: Request, res: Response) {
             { new: true }
         );
 
-        return res.status(200).json(updated);
+        return
     } catch (error) {
         console.error(error);
     }

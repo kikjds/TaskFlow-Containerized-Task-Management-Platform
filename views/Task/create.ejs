@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create task</title>
+    <link rel="stylesheet" href="/styles/main.css">
 </head>
-<body style="display: flex; margin: 0; align-items: center; justify-content: center; height: 100vh; width: 100vw;">
-    <form method="POST" style="display: flex; flex-direction: column; width: 30rem; align-items: center; background-color: rgba(209, 199, 199, 0.212); border-radius: 1rem; padding: 1rem; gap: 3px;">
+<body>
+    <form method="POST">
         <label for="title">Title</label>
         <input type="text" name="title" id="title" placeholder="Title"/>
         <label for="description">Description</label>
         <input type="text" name="description" id="description" placeholder="Description" /> 
-        <button type="submit" style="margin: 1rem; width: 100px;">Create</button>
+        <button type="submit">Create</button>
     </form>
 </body>
 </html>
