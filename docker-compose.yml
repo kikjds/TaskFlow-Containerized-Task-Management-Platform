@@ -1,0 +1,22 @@
+version: "3"
+services:
+  apka:
+    container_name: "Aplikacja"
+    build: 
+      dockerfile: "Dockerfile"
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_URL=mongodb://root:root@mongodbelo:27017/baza?authSource=admin
+      - SESSION_SECRET=your_session_secret
+      - DB_NAME=baza
+    depends_on:
+      - mongodbelo
+  mongodbelo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+
+
