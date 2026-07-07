@@ -16,6 +16,7 @@
             <tr>
                 <th>Title</th>
                 <th>Description</th>
+                <th>Deadline</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -30,12 +31,15 @@
                         <td>
                             <%= element.description %>
                         </td>
+                        <td>
+                            <%= new Date(element.deadline).toLocaleDateString() %>
+                        </td>
                         <td key="<%= element.id%>"><a href="/edit/<%= element.id %>">Edit</a> <a href="/delete/<%=element.id%>">Delete</a></td>
                     </tr>
                     <% }) %>
                         <% } else { %>
                             <tr>
-                                <td colspan="3">There is no task</td>
+                                <td colspan="4">There is no task</td>
                             </tr>
                     <% } %>
         </tbody>

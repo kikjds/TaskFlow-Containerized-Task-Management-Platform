@@ -17,11 +17,12 @@ export async function getAllTask(req: Request, res: Response) {
 export async function createTask(req: Request, res: Response) {
     try {
         const userId = req.session.userId;
-        const { title, description } = req.body;
+        const { title, description, deadline } = req.body;
 
         const task = await Task.create({
             title,
-            description
+            description,
+            deadline
         });
 
         await User.findByIdAndUpdate(userId, {
@@ -40,11 +41,11 @@ export async function getTaskById(id: string) {
 
 export async function editTaskById(req: Request, res: Response) {
     try {
-        const { title, description, id } = req.body;
+        const { title, description, deadline, id } = req.body;
 
-        const updated = await Task.findByIdAndUpdate(
+        await Task.findByIdAndUpdate(
             id,
-            { title, description },
+            { title, description, deadline },
             { new: true }
         );
 
