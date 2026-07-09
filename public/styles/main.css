@@ -118,20 +118,12 @@ td a {
     transition: .3s;
 }
 
-td a:first-child {
-    background: #27ae60;
+td a {
+    background: #175fbe;
 }
 
-td a:first-child:hover {
-    background: #219150;
-}
-
-td a:last-child {
-    background: #e74c3c;
-}
-
-td a:last-child:hover {
-    background: #c0392b;
+td a:hover {
+    background: #2265bd;
 }
 
 @media (max-width: 768px) {

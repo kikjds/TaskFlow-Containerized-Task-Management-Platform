@@ -2,11 +2,29 @@ import { Task } from "../model/task.model.js";
 import { User } from "../model/user.model.js";
 import { Request, Response } from "express";
 
-export async function getAllTask(req: Request, res: Response) {
+export async function getAllActiveTask(req: Request, res: Response) {
     try {
         const userId = req.session.userId;
 
-        const user = await User.findById(userId).populate("tasks");
+        const user = await User.findById(userId).populate({
+            path: "tasks",
+            match: {isCompleted: false}
+        })
+
+        return user?.tasks;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export async function getAllCompletedTask(req: Request, res: Response) {
+    try {
+        const userId = req.session.userId;
+
+        const user = await User.findById(userId).populate({
+            path: "tasks",
+            match: {isCompleted: true}
+        })
 
         return user?.tasks;
     } catch (error) {
@@ -58,6 +76,18 @@ export async function editTaskById(req: Request, res: Response) {
 export async function deleteTaskById(id: string) {
     try {
         await Task.findByIdAndDelete(id);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export async function editTaskStatusById(id: string) {
+    try {
+        const task = await Task.findById(id);
+        if (task) {
+            task.isCompleted = !task.isCompleted;
+            await task.save();
+        }
     } catch (error) {
         console.error(error);
     }

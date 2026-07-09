@@ -3,8 +3,13 @@ import * as taskService from "../service/task.service.js";
 
 export async function taskView(req: Request, res: Response) {
     try {
-        const tasks = await taskService.getAllTask(req, res)
-        res.render('index', {Tasks: tasks})
+        if(req.path === '/completed') {
+            const tasks = await taskService.getAllCompletedTask(req, res)
+            res.render('index', {Tasks: tasks, Completed: true})
+            return
+        }
+        const tasks = await taskService.getAllActiveTask(req, res)
+        return res.render('index', {Tasks: tasks, Completed: false})
     } catch (error) {
         console.log(error)
     }
@@ -13,7 +18,7 @@ export async function taskView(req: Request, res: Response) {
 export async function createTask(req:Request, res: Response) {
     try {
         await taskService.createTask(req, res)
-        res.redirect("/")
+        return res.redirect("/")
     } catch (error) {
         console.log(error)
     }
@@ -54,6 +59,18 @@ export async function deleteTask(req: Request, res: Response) {
         if(!id) res.redirect('/')
         const taskId = Array.isArray(id) ? id[0] : id
         await taskService.deleteTaskById(taskId)
+        res.redirect('/')
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export async function editTaskStatus(req: Request, res: Response) {
+    try {
+        const id = req.params.id
+        if(!id) res.redirect('/')
+        const taskId = Array.isArray(id) ? id[0] : id
+        await taskService.editTaskStatusById(taskId)
         res.redirect('/')
     } catch (error) {
         console.log(error)

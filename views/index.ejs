@@ -10,7 +10,18 @@
     <header>
         <a href="/create">Create task</a>
         <a href="/logout">Logout</a>
+        <% if (Completed) { %>
+            <a href="/">Active tasks</a>
+        <% } else { %>
+            <a href="/completed">Completed tasks</a>
+        <% } %>
     </header>
+    <%if (Completed) {%>
+        <h1>Completed tasks</h1>
+    <%} else {%>
+        <h1>Active tasks</h1>
+    <%} %>
+
     <table border="1">
         <thead>
             <tr>
@@ -34,7 +45,9 @@
                         <td>
                             <%= new Date(element.deadline).toLocaleDateString() %>
                         </td>
-                        <td key="<%= element.id%>"><a href="/edit/<%= element.id %>">Edit</a> <a href="/delete/<%=element.id%>">Delete</a></td>
+                        <td key="<%= element.id%>"><a href="/edit/<%= element.id %>">Edit</a> <a href="/delete/<%=element.id%>">Delete</a>
+                            <form href="/status/<%=element.id%>"><% if (Completed) { %>Restore<% } else { %>Done<% } %></a>
+                        </td>
                     </tr>
                     <% }) %>
                         <% } else { %>
