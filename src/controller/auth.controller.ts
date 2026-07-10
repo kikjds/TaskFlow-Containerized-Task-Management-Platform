@@ -2,7 +2,11 @@ import * as authService from "../service/auth.service.js";
 import { Request, Response } from "express";
 
 export async function registerUser(req: Request, res: Response) {
-    await authService.registerUser(req, res);
+    try {
+        await authService.registerUser(req, res);
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 export async function loginUser(req: Request, res: Response) {

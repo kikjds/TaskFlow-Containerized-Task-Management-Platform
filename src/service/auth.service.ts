@@ -4,13 +4,13 @@ import { Request, Response } from "express";
 
 export async function registerUser(req: Request, res: Response) {
     try {
-        const { username, password } = req.body;
+        const { username, password, email } = req.body;
         const existingUser = await User.findOne({ username });
         if (existingUser) {
             return res.status(400).json({ message: "Username already exists" });
         }
         const hash = await bcrypt.hash(password, 10);
-        await User.create({ username, password: hash });
+        await User.create({ username, password: hash, email });
         res.redirect('/login');
     } catch (error) {
         console.log(error);
