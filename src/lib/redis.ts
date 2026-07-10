@@ -1,8 +1,9 @@
-import { createClient  } from 'redis'
+import { Redis } from 'ioredis';
+import 'dotenv/config';
 
-const client = await createClient({
-    url: process.env.REDIS_URL || "redis://localhost:6379"
-}).on("error", (error) => console.log("Redis Client Error ", error)).connect()
+const client = new Redis({
+    host: process.env.REDIS_HOST,
+    port: Number(process.env.REDIS_PORT)
+});
 
-export default client
-
+export default client;

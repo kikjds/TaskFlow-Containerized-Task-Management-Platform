@@ -1,6 +1,7 @@
 import { Task } from "../model/task.model.js";
 import { User } from "../model/user.model.js";
 import { Request, Response } from "express";
+import queue from '../lib/queue.js'
 
 export async function getAllActiveTask(req: Request, res: Response) {
     try {
@@ -47,6 +48,12 @@ export async function createTask(req: Request, res: Response) {
             $push: { tasks: task._id }
         });
 
+        await queue.add('notify', { taskId: task._id }, {
+            jobId: task._id.toString(),
+            attempts: 3,
+            delay: new Date(deadline).getTime() - Date.now(),
+        });
+
         return
     } catch (error) {
         console.error(error);
@@ -61,13 +68,19 @@ export async function editTaskById(req: Request, res: Response) {
     try {
         const { title, description, deadline, id } = req.body;
 
-        await Task.findByIdAndUpdate(
+        const task = await Task.findByIdAndUpdate(
             id,
             { title, description, deadline },
             { new: true }
         );
 
-        return
+        if (!task?.isCompleted) {
+            const job = await queue.getJob(id);
+            if (job) {
+                await job.changeDelay(new Date(deadline).getTime() - Date.now());
+            }
+        }
+        return;
     } catch (error) {
         console.error(error);
     }
@@ -76,9 +89,15 @@ export async function editTaskById(req: Request, res: Response) {
 export async function deleteTaskById(id: string) {
     try {
         await Task.findByIdAndDelete(id);
+        const job = await queue.getJob(id);
+
+        if (job) {
+            await job.remove();
+        }
     } catch (error) {
         console.error(error);
     }
+
 }
 
 export async function editTaskStatusById(id: string) {
@@ -86,6 +105,18 @@ export async function editTaskStatusById(id: string) {
         const task = await Task.findById(id);
         if (task) {
             task.isCompleted = !task.isCompleted;
+            if(task.isCompleted) {
+                const job = await queue.getJob(id);
+                if (job) {
+                    await job.remove();
+                }
+            } else {
+                await queue.add('notify', { taskId: task._id }, {
+                    jobId: task._id.toString(),
+                    attempts: 3,
+                    delay: new Date(task.deadline).getTime() - Date.now(),
+                });
+            }
             await task.save();
         }
     } catch (error) {
