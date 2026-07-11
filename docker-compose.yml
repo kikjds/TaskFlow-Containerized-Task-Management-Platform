@@ -1,22 +1,23 @@
 version: "3"
 services:
   apka:
-    container_name: "Aplikacja"
+    container_name: "NodeApp"
     build: 
       dockerfile: "Dockerfile"
     ports:
       - "3000:3000"
-    environment:
-      - PORT=3000
-      - DB_URL=mongodb://root:root@mongodbelo:27017/baza?authSource=admin
-      - SESSION_SECRET=your_session_secret
-      - DB_NAME=baza
+    env_file:
+      - .env
     depends_on:
-      - mongodbelo
-  mongodbelo:
+      - mongodb
+      - Redis
+  mongodb:
     image: mongo
+    container_name: "MongoDB"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
-
+  Redis:
+    image: redis
+    container_name: "Redis"
 
