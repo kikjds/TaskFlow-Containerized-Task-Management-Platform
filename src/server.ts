@@ -1,12 +1,13 @@
 import express from "express"
 import taskRouter from "./route/task.route.js"
 import authRouter from "./route/auth.route.js"
+import userRouter from "./route/user.route.js"
 import session from "express-session"
 import mongoStore from "connect-mongo"
 import mongoose from "mongoose"
 import "dotenv/config"
 import cors from "cors"
-import {connect} from "./lib/db.js"
+import { connect } from "./lib/db.js"
 
 declare module "express-session" {
     interface SessionData {
@@ -21,6 +22,7 @@ const corsOptions = {
     origin: ORIGIN,
     methods: "GET,POST",
 }
+
 connect().catch(err => console.log(err));
 const app = express()
 
@@ -32,7 +34,7 @@ app.use(express.static("public"))
 app.use(session({
     secret: process.env.SESSION_SECRET || "secret",
     store: mongoStore.create({
-        client: mongoose.connection.getClient(),
+        client: mongoose.connection.getClient() as any,
         dbName: process.env.DB_NAME,
         collectionName: "sessions",
         ttl: 14 * 24 * 60 * 60,
@@ -46,5 +48,7 @@ app.use(session({
 app.use(taskRouter)
 //Auth routes
 app.use(authRouter)
+//User routes
+app.use(userRouter)
 
 export default app
