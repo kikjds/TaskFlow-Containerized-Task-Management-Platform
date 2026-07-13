@@ -4,6 +4,7 @@ import * as userService from "../service/user.service.js";
 export async function updateUserSettingsView(req: Request, res: Response) {
     try {
         const user = await userService.getUserById(req, res);
+        console.log(user)
         if (user) {
             res.render("user/settings", { user });
         } else {
@@ -18,7 +19,7 @@ export async function updateUserSettingsView(req: Request, res: Response) {
 export async function updateUser(req: Request, res: Response) {
     try {
         await userService.updateUserBasedOnId(req, res);
-        res.redirect('/user/settings');
+        res.redirect('/settings');
     } catch (error) {
         console.log(error);
     }

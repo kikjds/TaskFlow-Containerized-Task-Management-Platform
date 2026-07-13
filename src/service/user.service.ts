@@ -19,7 +19,7 @@ export async function updateUserBasedOnId(req: Request, res: Response) {
         if(user) {
             user[0].username = username;
             user[0].email = email;
-            user[0].notifications = notifications;
+            user[0].notifications = notifications ? true :  false;
             await user[0].save();
             return
         } else {
