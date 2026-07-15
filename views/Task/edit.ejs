@@ -13,7 +13,7 @@
         <label for="description">Description</label>
         <input type="text" name="description" id="description" value="<%=task.description%>" /> 
         <label for="deadline">Deadline</label>
-        <input type="date" name="deadline" id="deadline" value="<%=new Date(task.deadline).toISOString().split('T')[0]%>" />
+        <input type="datetime-local" name="deadline" id="deadline" value="<%=new Date(task.deadline).toISOString().slice(0, 16)%>" />
         <input hidden name="id" value='<%=task.id%>' />
         <button type="submit">Edit</button>
     </form>
