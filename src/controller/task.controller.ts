@@ -67,10 +67,7 @@ export async function deleteTask(req: Request, res: Response) {
 
 export async function editTaskStatus(req: Request, res: Response) {
     try {
-        const id = req.params.id
-        if(!id) res.redirect('/')
-        const taskId = Array.isArray(id) ? id[0] : id
-        await taskService.editTaskStatusById(taskId)
+        await taskService.editTaskStatusById(req, res)
         res.redirect('/')
     } catch (error) {
         console.log(error)

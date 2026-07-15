@@ -14,7 +14,7 @@ export async function getAllActiveTask(req: Request, res: Response) {
 
         return user?.tasks;
     } catch (error) {
-        console.error(error);
+        console.log(error);
     }
 }
 
@@ -29,7 +29,7 @@ export async function getAllCompletedTask(req: Request, res: Response) {
 
         return user?.tasks;
     } catch (error) {
-        console.error(error);
+        console.log(error);
     }
 }
 
@@ -44,20 +44,21 @@ export async function createTask(req: Request, res: Response) {
             deadline
         });
 
-        await User.findByIdAndUpdate(userId, {
+        const user = await User.findByIdAndUpdate(userId, {
             $push: { tasks: task._id }
         });
 
-        await queue.add('notify', { taskId: task._id, userId: userId }, {
+        await queue.add('notify', { taskId: task._id }, {
             jobId: task._id.toString(),
             attempts: 3,
             removeOnComplete: true,
             delay: new Date(deadline).getTime() - Date.now(),
         });
+        }
 
         return
     } catch (error) {
-        console.error(error);
+        console.log(error);
     }
 }
 
@@ -68,14 +69,14 @@ export async function getTaskById(id: string) {
 export async function editTaskById(req: Request, res: Response) {
     try {
         const { title, description, deadline, id } = req.body;
-
+        const userId = req.session.userId;
         const task = await Task.findByIdAndUpdate(
             id,
             { title, description, deadline },
             { new: true }
         );
-
-        if (!task?.isCompleted) {
+        const user = await User.findById(userId);
+        if (!task?.isCompleted && user?.notifications) {
             const job = await queue.getJob(id);
             if (job) {
                 await job.changeDelay(new Date(deadline).getTime() - Date.now());
@@ -83,7 +84,7 @@ export async function editTaskById(req: Request, res: Response) {
         }
         return;
     } catch (error) {
-        console.error(error);
+        console.log(error);
     }
 }
 
@@ -96,22 +97,27 @@ export async function deleteTaskById(id: string) {
             await job.remove();
         }
     } catch (error) {
-        console.error(error);
+        console.log(error);
     }
 
 }
 
-export async function editTaskStatusById(id: string) {
+export async function editTaskStatusById(req: Request, res: Response) {
     try {
-        const task = await Task.findById(id);
+        const userId = req.session.userId;
+        const id = req.params.id;
+        const taskId = Array.isArray(id) ? id[0] : id
+        if(!id) return res.redirect('/')
+        const task = await Task.findById(taskId);
+        const user = await User.findById(userId);
         if (task) {
             task.isCompleted = !task.isCompleted;
             if(task.isCompleted) {
-                const job = await queue.getJob(id);
+                const job = await queue.getJob(taskId);
                 if (job) {
                     await job.remove();
                 }
-            } else {
+            } else if(user?.notifications) {
                 await queue.add('notify', { taskId: task._id }, {
                     jobId: task._id.toString(),
                     attempts: 3,
@@ -121,6 +127,6 @@ export async function editTaskStatusById(id: string) {
             await task.save();
         }
     } catch (error) {
-        console.error(error);
+        console.log(error);
     }
 }
