@@ -48,9 +48,10 @@ export async function createTask(req: Request, res: Response) {
             $push: { tasks: task._id }
         });
 
-        await queue.add('notify', { taskId: task._id }, {
+        await queue.add('notify', { taskId: task._id, userId: userId }, {
             jobId: task._id.toString(),
             attempts: 3,
+            removeOnComplete: true,
             delay: new Date(deadline).getTime() - Date.now(),
         });
 

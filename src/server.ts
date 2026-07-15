@@ -8,6 +8,7 @@ import mongoose from "mongoose"
 import "dotenv/config"
 import cors from "cors"
 import { connect } from "./lib/db.js"
+import "./service/notification.service.js"
 
 declare module "express-session" {
     interface SessionData {
