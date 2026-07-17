@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as taskService from "../service/task.service.js";
+import { taskSchema } from "../validator/task.validator.js"
 
 export async function taskView(req: Request, res: Response) {
     try {
@@ -17,6 +18,10 @@ export async function taskView(req: Request, res: Response) {
 
 export async function createTask(req:Request, res: Response) {
     try {
+        const { error } = taskSchema.safeParse(req.body);
+        if (error) {
+            return res.status(400).render('Task/create', {Title: "Creating task", Message: "Invalid task data", Errors: error.issues });
+        }
         await taskService.createTask(req, res)
         return res.redirect("/")
     } catch (error) {
@@ -26,7 +31,7 @@ export async function createTask(req:Request, res: Response) {
 
 export async function createTaskView(req: Request, res: Response) {
     try {
-        res.render('Task/create', {Message: "Creating task"})
+        res.render('Task/create', {Title: "Creating task", Message: null, Errors: null})
     } catch (error) {
         console.log(error)
     }
