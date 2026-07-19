@@ -26,7 +26,7 @@ async function createTaskReminders(taskId: string, userId: string | undefined, d
     for (const time of reminders) {
         const delay = deadline.getTime() - Date.now() - time;
 
-        if (delay > 3600000) {
+        if (delay > 0) {
             await queue.add(
                 "notify",
                 {
