@@ -1,0 +1,47 @@
+name: build and push docker image
+
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+    branches:
+      - "master"
+
+jobs:
+  push_to_registry:
+    name: Push docker image to docker hub
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v6
+    - name: Login into docker hub
+      uses: docker/login-action@b58b17c30b4db92a4ed049b213cae512b12e460b
+      with:
+        username: ${{secrets.DOCKER_USERNAME}}
+        password: ${{secrets.DOCKER_PASSWORD}}
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+      with: 
+        images: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}
+    - name: Build and push Docker image
+      id: push
+      uses: docker/build-push-action@a9855f30a5cab2ede9bca3c8b2887d3a340a5838
+      with: 
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: ${{steps.meta.outputs.tags}}
+        labels: ${{steps.meta.outputs.labels}}
+    - name: Generate artifact attestation
+      uses: actions/attest@v4
+      with: 
+        subject-name: index.docker.io/${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}
+        subject-digest: ${{ steps.push.outputs.digest }}
+        push-to-registry: true
