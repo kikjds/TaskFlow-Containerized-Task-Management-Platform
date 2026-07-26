@@ -9,12 +9,12 @@
 <body>
         <form method="POST">
         <label for="title">Title</label>
-        <input type="text" name="title" id="title" value="<%=Task.title%>"/>
+        <input type="text" name="title" id="title" value="<%= title%>"/>
         <label for="description">Description</label>
-        <input type="text" name="description" id="description" value="<%=Task.description%>" /> 
+        <input type="text" name="description" id="description" value="<%= description%>" /> 
         <label for="deadline">Deadline</label>
-        <input type="datetime-local" name="deadline" id="deadline" value="<%=new Date(Task.deadline).toISOString().slice(0, 16)%>" />
-        <input hidden name="id" value='<%=Task.id%>' />
+        <input type="datetime-local" name="deadline" id="deadline" value="<%=new Date(deadline).toISOString().slice(0, 16)%>" />
+        <input hidden name="id" value='<%= id%>' />
         <button type="submit">Edit</button>
     </form>
     <% if (Message) { %>

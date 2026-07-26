@@ -9,12 +9,23 @@
 <body>
     <form method="POST">
         <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
+        <input type="text" id="username" name="username" value="<%= username %>" required>
         <br>
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
         <br>
         <button type="submit">Login</button>
+        <a href="/register">Register</a>
     </form>
+    <% if (Message) { %>
+        <p><%= Message %></p>
+    <% } %>
+    <% if (Errors) { %>
+        <ul>
+            <% Errors.forEach((error) => { %>
+                <li><%= error.message %></li>
+            <% }); %>
+        </ul>
+    <% } %>
 </body>
 </html>
