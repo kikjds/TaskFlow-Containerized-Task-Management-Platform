@@ -1,80 +1,156 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import * as taskService from "../service/task.service.js";
-import { taskSchema } from "../validator/task.validator.js"
+import { taskSchema } from "../validator/task.validator.js";
 
-export async function taskView(req: Request, res: Response) {
+export async function taskView(req: Request, res: Response, next: NextFunction) {
     try {
-        if(req.path === '/completed') {
-            const tasks = await taskService.getAllCompletedTask(req, res)
-            res.render('index', {Tasks: tasks, Completed: true})
-            return
+        const userId = req.session.userId!;
+
+        if (req.path === "/completed") {
+            const tasks = await taskService.getAllCompletedTask(userId);
+            return res.render("index", { Tasks: tasks, Completed: true });
         }
-        const tasks = await taskService.getAllActiveTask(req, res)
-        return res.render('index', {Tasks: tasks, Completed: false})
+
+        const tasks = await taskService.getAllActiveTask(userId);
+        return res.render("index", { Tasks: tasks, Completed: false });
     } catch (error) {
-        console.log(error)
+        next(error);
     }
 }
 
-export async function createTask(req:Request, res: Response) {
+export async function createTask(req: Request, res: Response, next: NextFunction) {
     try {
-        const { error } = taskSchema.safeParse(req.body);
-        if (error) {
-            return res.status(400).render('Task/create', {Title: "Creating task", Message: "Invalid task data", Errors: error.issues });
+        const result = taskSchema.safeParse(req.body);
+
+        if (!result.success) {
+            return res.status(400).render("Task/create", {
+                Title: "Creating task",
+                Message: "Invalid task data",
+                Errors: result.error.issues,
+                title: req.body.title,
+                description: req.body.description,
+                deadline: req.body.deadline
+            });
         }
-        await taskService.createTask(req, res)
-        return res.redirect("/")
+
+        await taskService.createTask(
+            req.session.userId!,
+            result.data.title,
+            result.data.description,
+            result.data.deadline
+        );
+
+        return res.redirect("/");
     } catch (error) {
-        console.log(error)
+        next(error);
     }
 }
 
-export async function createTaskView(req: Request, res: Response) {
+export async function createTaskView(req: Request, res: Response, next: NextFunction) {
     try {
-        res.render('Task/create', {Title: "Creating task", Message: null, Errors: null})
+        res.render("Task/create", {
+            Title: "Creating task",
+            Message: null,
+            Errors: null,
+            title: null,
+            description: null,
+            deadline: null
+        });
     } catch (error) {
-        console.log(error)
+        next(error);
     }
 }
 
-export async function editTaskView(req:Request, res: Response) {
+export async function editTaskView(req: Request, res: Response, next: NextFunction) {
     try {
-        const id = req.params.id
-        if(!id) res.redirect('/')
-        const taskId = Array.isArray(id) ? id[0] : id
-        const task = await taskService.getTaskById(taskId)    
-        res.render('Task/edit', {task: task})
+        const id = req.params.id;
+
+        if (!id) {
+            return res.redirect("/");
+        }
+
+        const taskId = Array.isArray(id) ? id[0] : id;
+        const task = await taskService.getTaskById(taskId);
+
+        return res.render("Task/edit", {
+            Title: "Editing task",
+            Message: null,
+            Errors: null,
+            title: task?.title,
+            description: task?.description,
+            deadline: task?.deadline,
+            id: task?._id
+        });
     } catch (error) {
-        console.log(error)
+        next(error);
     }
 }
 
-export async function editTask(req:Request, res:Response) {
+export async function editTask(req: Request, res: Response, next: NextFunction) {
     try {
-        await taskService.editTaskById(req, res)
-        res.redirect('/')
+        const result = taskSchema.safeParse(req.body);
+
+        if (!result.success) {
+            return res.status(400).render("Task/edit", {
+                Title: "Editing task",
+                Message: "Invalid task data",
+                Errors: result.error.issues,
+                title: req.body.title,
+                description: req.body.description,
+                deadline: req.body.deadline,
+                id: req.body.id
+            });
+        }
+
+        await taskService.editTaskById(
+            req.body.id,
+            req.session.userId!,
+            result.data.title,
+            result.data.description,
+            result.data.deadline
+        );
+
+        return res.redirect("/");
     } catch (error) {
-        console.log(error)
+        next(error);
     }
 }
 
-export async function deleteTask(req: Request, res: Response) {
+export async function deleteTask(req: Request, res: Response, next: NextFunction) {
     try {
-        const id = req.params.id
-        if(!id) res.redirect('/')
-        const taskId = Array.isArray(id) ? id[0] : id
-        await taskService.deleteTaskById(taskId)
-        res.redirect('/')
+        const id = req.params.id;
+
+        if (!id) {
+            return res.redirect("/");
+        }
+
+        const taskId = Array.isArray(id) ? id[0] : id;
+
+        await taskService.deleteTaskById(taskId);
+
+        return res.redirect("/");
     } catch (error) {
-        console.log(error)
+        next(error);
     }
 }
 
-export async function editTaskStatus(req: Request, res: Response) {
+export async function editTaskStatus(req: Request, res: Response, next: NextFunction) {
     try {
-        await taskService.editTaskStatusById(req, res)
-        res.redirect('/')
+        const id = req.params.id;
+
+        if (!id) {
+            return res.redirect("/");
+        }
+
+        const taskId = Array.isArray(id) ? id[0] : id;
+
+        await taskService.editTaskStatusById(
+            taskId,
+            req.session.userId!
+        );
+
+        return res.redirect("/");
     } catch (error) {
-        console.log(error)
+        next(error);
     }
 }

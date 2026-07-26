@@ -1,31 +1,26 @@
-import { Request, Response } from "express";
 import { User } from "../model/user.model.js";
-import mongoose from "mongoose";
 
-export function getUserById(req: Request, res: Response) {
-    try {
-        const userId = req.session.userId;
-        return User.findById(userId);        
-    } catch (error) {
-        console.log(error)
-    }
+export async function getUserById(userId: string) {
+    return User.findById(userId);
 }
 
-export async function updateUserBasedOnId(req: Request, res: Response) {
-    try {
-        const userId = req.session.userId;
-        const { username, email, notifications } = req.body;      
-        const user =  await User.find({ _id: new mongoose.Types.ObjectId(userId)})
-        if(user) {
-            user[0].username = username;
-            user[0].email = email;
-            user[0].notifications = notifications ? true :  false;
-            await user[0].save();
-            return
-        } else {
-            return res.redirect('/login');
-        }
-    } catch (error) {
-        console.error(error);
+export async function updateUserBasedOnId(
+    userId: string,
+    username: string,
+    email: string,
+    notifications: boolean
+) {
+    const user = await User.findById(userId);
+
+    if (!user) {
+        return null;
     }
+
+    user.username = username;
+    user.email = email;
+    user.notifications = notifications ? true : false;
+
+    await user.save();
+
+    return user;
 }

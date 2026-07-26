@@ -1,15 +1,9 @@
 import { Worker } from "bullmq";
 import redisClient from "../lib/redis.js"
 import { User } from "../model/user.model.js"
-import nodemailer from "nodemailer";
+import transporter from "../lib/mailer.js"
 
-const transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-})
+
 
 new Worker('notify', async (job) => {
     const taskId = job.data.taskId
