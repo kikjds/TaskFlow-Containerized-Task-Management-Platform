@@ -1,4 +1,4 @@
-import express from "express"
+import express, { NextFunction, Request, Response } from "express"
 import taskRouter from "./route/task.route.js"
 import authRouter from "./route/auth.route.js"
 import userRouter from "./route/user.route.js"
@@ -9,6 +9,7 @@ import "dotenv/config"
 import cors from "cors"
 import { connect } from "./lib/db.js"
 import "./service/notification.service.js"
+import errorMiddleware from "./middleware/error.middleware.js"
 
 declare module "express-session" {
     interface SessionData {
@@ -51,5 +52,8 @@ app.use(taskRouter)
 app.use(authRouter)
 //User routes
 app.use(userRouter)
+
+//Error handling middleware
+app.use(errorMiddleware)
 
 export default app
