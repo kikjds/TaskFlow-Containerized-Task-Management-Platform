@@ -15,6 +15,7 @@
         <% } else { %>
             <a href="/completed">Completed tasks</a>
         <% } %>
+        <a href="/settings">Settings</a>
     </header>
     <%if (Completed) {%>
         <h1>Completed tasks</h1>
@@ -42,7 +43,7 @@
                             <%= element.description %>
                         </td>
                         <td>
-                            <%= new Date(element.deadline).toLocaleDateString() %>
+                            <%= new Date(element.deadline).toLocaleString(); %>
                         </td>
                         <td key="<%= element.id%>"><a href="/edit/<%= element.id %>">Edit</a> <a href="/delete/<%=element.id%>">Delete</a>
                             <a href="/status/<%=element.id%>"><% if (Completed) { %>Restore<% } else { %>Done<% } %></a>
