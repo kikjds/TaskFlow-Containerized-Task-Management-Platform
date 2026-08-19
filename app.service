@@ -1,0 +1,18 @@
+[Unit]
+Description=Task Manager application
+After=network-online.target mongod.service redis-server.service
+Wants=network-online.target
+Requires=mongod.service redis-server.service
+
+[Service]
+Type=simple
+User=YOUR_LINUX_USER
+Group=YOUR_LINUX_USER
+WorkingDirectory=PATH_TO_PROJECT
+ExecStart=/usr/bin/node PATH_TO_DIST_INDEXJS
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
