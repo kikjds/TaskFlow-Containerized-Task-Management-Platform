@@ -5,6 +5,9 @@ import userRouter from "./route/user.route.js"
 import session from "express-session"
 import mongoStore from "connect-mongo"
 import mongoose from "mongoose"
+import rateLimit from "express-rate-limit"
+import { RedisStore, type RedisReply } from 'rate-limit-redis'
+import client from "./lib/redis.js"
 import "dotenv/config"
 import cors from "cors"
 import { connect } from "./lib/db.js"
@@ -27,7 +30,21 @@ const corsOptions = {
 
 connect().catch(err => console.log(err));
 const app = express()
+app.set("trust proxy", 1)
+const rateLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000, // 10 miutes
+    limit: 120, // Limit 120 requests for one ip
+    standardHeaders: true,
+    legacyHeaders: false,
 
+    store: new RedisStore({
+        sendCommand: (command: string, ...args: string[]) => 
+            client.call(command, ...args) as Promise<RedisReply>
+
+    })
+
+})
+app.use(rateLimiter)
 app.use(cors(corsOptions))
 app.use(express.json())
 app.use(express.urlencoded({extended: false, limit: '1mb', parameterLimit: 5000}))
