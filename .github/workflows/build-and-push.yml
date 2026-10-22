@@ -11,6 +11,7 @@ on:
 jobs:
   push_to_registry:
     name: Push docker image to docker hub
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       packages: write
